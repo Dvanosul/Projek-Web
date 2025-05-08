@@ -7,7 +7,7 @@ INSERT INTO public.grosir (id, jumlah) VALUES
 ('GR001', '10-49'),
 ('GR002', '50-99'),
 ('GR003', '100-499'),
-('GR004', '500+')
+('GR004', '500+');
 
 -- Insert data dummy barang ATK
 INSERT INTO public.barang (id, nama_barang, harga, stok, deskripsi, gambar, grosir_id) VALUES
@@ -49,45 +49,3 @@ INSERT INTO jasa_kirim (id, jasa_kirim, ongkir) VALUES
 ('44', 'Anter Aja', 16000.00),
 ('55', 'SiCepat', 15500.00),
 ('66', 'Ninja Express', 19000.00);
-
-
-
-
-
--- Reset tabel pesanan untuk menggunakan auto-increment
-ALTER TABLE pesanan_barang DROP CONSTRAINT IF EXISTS pesanan_barang_pesanan_id_fkey;
-
--- Buat sequence untuk pesanan jika belum ada
-CREATE SEQUENCE IF NOT EXISTS pesanan_id_seq START 1;
-ALTER SEQUENCE pesanan_id_seq RESTART WITH 1;
-
--- Ubah kolom ID di tabel pesanan (gunakan INTEGER, bukan SERIAL)
-ALTER TABLE pesanan ALTER COLUMN id TYPE INTEGER;
-ALTER TABLE pesanan ALTER COLUMN id SET DEFAULT nextval('pesanan_id_seq');
-ALTER SEQUENCE pesanan_id_seq OWNED BY pesanan.id;
-
-
-ALTER TABLE transaksi_barang DROP CONSTRAINT IF EXISTS transaksi_barang_transaksi_id_fkey;
-
--- Buat sequence untuk transaksi jika belum ada
-CREATE SEQUENCE IF NOT EXISTS transaksi_id_seq START 1;
-ALTER SEQUENCE transaksi_id_seq RESTART WITH 1;
-
--- Ubah kolom ID di tabel transaksi
-ALTER TABLE transaksi ALTER COLUMN id TYPE INTEGER;
-ALTER TABLE transaksi ALTER COLUMN id SET DEFAULT nextval('transaksi_id_seq');
-ALTER SEQUENCE transaksi_id_seq OWNED BY transaksi.id;
-
--- Buat ulang constraint foreign key
-ALTER TABLE pesanan_barang ADD CONSTRAINT pesanan_barang_pesanan_id_fkey
-FOREIGN KEY (pesanan_id) REFERENCES pesanan(id);
-ALTER TABLE transaksi_barang ADD CONSTRAINT transaksi_barang_transaksi_id_fkey
-FOREIGN KEY (transaksi_id) REFERENCES transaksi(id);
-
--- Hapus semua data dan reset sequence (opsional, hanya jika ingin mulai dari awal)
-DELETE FROM pesanan_barang;
-DELETE FROM pesanan;
-DELETE FROM transaksi_barang;
-DELETE FROM transaksi;
-ALTER SEQUENCE pesanan_id_seq RESTART WITH 1;
-ALTER SEQUENCE transaksi_id_seq RESTART WITH 1;
