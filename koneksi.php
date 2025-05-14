@@ -1,7 +1,7 @@
 <?php
 $servername = "localhost";
 $username = "postgres";
-$password = "admin";
+$password = "1234";
 $dbname = "toko_atk";
 
 

@@ -10,10 +10,11 @@ $telepon = $_POST['telepon'];
 $username = $_POST['username'];
 $password = $_POST['password'];
 
-// query insert
-$sql = "INSERT INTO kasir (nama, alamat, telepon, username, password) 
-        VALUES ('$nama', '$alamat', '$telepon', '$username', '$password')";
-$result = pg_query($conn, $sql);
+// Menggunakan parameterized query untuk keamanan dan menambahkan ID yang dihasilkan
+$sql = "INSERT INTO kasir (id, nama, alamat, telepon, username, password) 
+        VALUES (nextval('kasir_id_seq'), $1, $2, $3, $4, $5)";
+        
+$result = pg_query_params($conn, $sql, [$nama, $alamat, $telepon, $username, $password]);
 
 // cek hasil query
 if ($result) {

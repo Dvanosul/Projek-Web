@@ -1,3 +1,8 @@
+<?php
+// File koneksi dan inisialisasi lainnya jika diperlukan
+// Jangan mencampur tag PHP dengan HTML seperti pada baris pertama
+$baseUrl = "../"
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -12,11 +17,8 @@
     .form-group-gambar {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      /* Memisahkan tampilan menjadi dua kolom dengan lebar yang sama */
       grid-gap: 10px;
-      /* Jarak antara elemen-elemen dalam grid */
       align-items: center;
-      /* Pusatkan elemen vertikal dalam grid */
     }
 
     .form-group-gambar img {
@@ -31,7 +33,7 @@
 </head>
 
 <body>
-      <!-- Navbar -->
+  <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
     <div class="container-fluid">
       <a class="navbar-brand ml-5" href="#"><b>Panel Admin Toko ATeKa</b></a>
@@ -68,12 +70,14 @@
           <tr>
             <th>Jumlah Pembelian:</th>
             <td>
-              <form action="" method="post">
-                <select name="jumlah_beli" onchange="this.form.submit()" class="mx-auto">
-                  <option value="aa" <?php if (isset($_POST['jumlah_beli']) && $_POST['jumlah_beli'] == 'aa') echo 'selected'; ?>>Satuan</option>
-                  <option value="bb" <?php if (isset($_POST['jumlah_beli']) && $_POST['jumlah_beli'] == 'bb') echo 'selected'; ?>>Pack</option>
-                </select>
-              </form>
+            <form action="" method="post">
+              <select name="jumlah_beli" onchange="this.form.submit()" class="mx-auto">
+                <option value="GR001" <?php if (isset($_POST['jumlah_beli']) && $_POST['jumlah_beli'] == 'GR001') echo 'selected'; ?>>10-49 (Satuan)</option>
+                <option value="GR002" <?php if (isset($_POST['jumlah_beli']) && $_POST['jumlah_beli'] == 'GR002') echo 'selected'; ?>>50-99 (Pack)</option>
+                <option value="GR003" <?php if (isset($_POST['jumlah_beli']) && $_POST['jumlah_beli'] == 'GR003') echo 'selected'; ?>>100-499</option>
+                <option value="GR004" <?php if (isset($_POST['jumlah_beli']) && $_POST['jumlah_beli'] == 'GR004') echo 'selected'; ?>>500+</option>
+              </select>
+            </form>
             </td>
           </tr>
         </table>
@@ -85,36 +89,39 @@
 
     <div class="row">
       <?php
-      // Koneksi ke database ODBC
+      // Koneksi ke database
       include '../koneksi.php';
-      $jumlah_beli = isset($_POST['jumlah_beli']) ? $_POST['jumlah_beli'] : 'aa'; // Memberikan nilai default 'aa' jika tidak terdefinisi
-      // Query untuk mengambil data produk
-      $query = "SELECT barang.* FROM barang INNER JOIN grosir ON  barang.grosir_id = grosir.id WHERE grosir_id ='$jumlah_beli'";
-      $result = pg_query($conn, $query);
+      $jumlah_beli = isset($_POST['jumlah_beli']) ? $_POST['jumlah_beli'] : 'GR001';
+      $query = "SELECT barang.* FROM barang INNER JOIN grosir ON barang.grosir_id = grosir.id WHERE grosir_id = $1";
+      $result = pg_query_params($conn, $query, [$jumlah_beli]);
 
       // Menampilkan data produk dalam bentuk card
       while ($row = pg_fetch_assoc($result)) {
         echo "<div class='col-md-2 mt-3 justify-content-center'>";
         echo "<div class='card'>";
-        echo "<img src='/Gambar/produk/" . $row['gambar'] . "' class='card-img-top' alt='Gambar Produk'>";
+        echo "<img src='" . $baseUrl . "Gambar/produk/" . $row['gambar'] . "' class='card-img-top' alt='Gambar Produk'>";
         echo "<div class='card-body'>";
         echo "<h5 class='card-title'>" . $row['nama_barang'] . "</h5>";
         echo "<p class='card-text'>Stok: " . $row['stok'] . "</p>";
-        if ($jumlah_beli == 'aa') {
+        if ($jumlah_beli == 'GR001') {
           echo "<p class='card-text'>Rp." . number_format($row['harga'], 2, ',', '.') . "/Biji</p>";
-        } elseif ($jumlah_beli == 'bb') {
+        } elseif ($jumlah_beli == 'GR002') {
           echo "<p class='card-text'>Rp." . number_format($row['harga'], 2, ',', '.') . "/Pack</p>";
+        } elseif ($jumlah_beli == 'GR003') {
+          echo "<p class='card-text'>Rp." . number_format($row['harga'], 2, ',', '.') . "/Lusin</p>";
+        } elseif ($jumlah_beli == 'GR004') {
+          echo "<p class='card-text'>Rp." . number_format($row['harga'], 2, ',', '.') . "/Gross</p>";
         }
-        ?>
+      ?>
         <div class="d-flex justify-content-between">
           <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-<?php echo $row['id'] ?>" style="width:100px;">Edit</a>
           <a href="hapus_produk.php?id=<?php echo $row['id'] ?>" class="btn btn-danger" style="width:100px;">Hapus</a>
         </div>
-        <?php
+      <?php
         echo "</div>";
         echo "</div>";
         echo "</div>";
-        ?>
+      ?>
         <!-- Modal -->
         <div class="modal fade" id="modal-<?php echo $row['id']; ?>" tabindex="-1" aria-labelledby="modal-<?php echo $row['id']; ?>-label" aria-hidden="true">
             <div class="modal-dialog modal-lg">
@@ -153,7 +160,7 @@
                             <!-- Input gambar -->
                             <div class="mb-3">
                                 <label for="gambar" class="form-label">Gambar</label>
-                                <input type="file" class="form-control"  value="<?php echo $row['gambar']; ?>" id="gambar" name="gambar" accept="image/*">
+                                <input type="file" class="form-control" id="gambar" name="gambar" accept="image/*">
                             </div>
                             
                             <!-- Input jumlah_beli -->
@@ -161,7 +168,7 @@
 
                             <!-- Tombol simpan -->
                             <div class="text-end">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Batal</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                                 <button type="submit" class="btn btn-primary">Simpan</button>
                             </div>
                         </form>
@@ -169,13 +176,13 @@
                 </div>
             </div>
         </div>
-      
       <?php
       }
       ?>
     </div>
   </div>
-<!--Modal Tambah produk-->
+
+  <!--Modal Tambah produk-->
   <div class="modal fade" id="tambah_produk" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
       <div class="modal-content">
@@ -196,8 +203,10 @@
                 <div class="form-group">
                   <label for="jumlah_beli">Jumlah Pembelian :</label>
                   <select name="jumlah_beli" class="form-control">
-                    <option value="aa">Satuan</option>
-                    <option value="bb">Pack</option>
+                    <option value="GR001">10-49 (Satuan)</option>
+                    <option value="GR002">50-99 (Pack)</option>
+                    <option value="GR003">100-499</option>
+                    <option value="GR004">500+</option>
                   </select>
                 </div>
                 <!-- Input harga produk -->
@@ -243,11 +252,10 @@
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
   <script>
     // Fungsi untuk menampilkan preview gambar saat dipilih
-    
     function readURL(input) {
       if (input.files && input.files[0]) {
         var reader = new FileReader();
@@ -279,5 +287,4 @@
     });
   </script>
 </body>
-
 </html>

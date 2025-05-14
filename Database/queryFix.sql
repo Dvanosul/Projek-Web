@@ -36,3 +36,12 @@ DELETE FROM transaksi_barang;
 DELETE FROM transaksi;
 ALTER SEQUENCE pesanan_id_seq RESTART WITH 1;
 ALTER SEQUENCE transaksi_id_seq RESTART WITH 1;
+
+-- Admin Fix for sequence
+-- Buat sequence untuk tabel kasir jika belum ada
+CREATE SEQUENCE IF NOT EXISTS kasir_id_seq START 1;
+ALTER SEQUENCE kasir_id_seq RESTART WITH 1;
+
+-- Pastikan ID kolom menggunakan sequence
+ALTER TABLE kasir ALTER COLUMN id SET DEFAULT nextval('kasir_id_seq');
+ALTER SEQUENCE kasir_id_seq OWNED BY kasir.id;

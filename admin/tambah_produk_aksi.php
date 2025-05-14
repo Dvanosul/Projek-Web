@@ -1,8 +1,6 @@
 <?php
-// Koneksi ke database ODBC
 include '../koneksi.php';
 
-// Cek apakah ada data yang dikirim melalui metode POST
 if ($_POST) {
   if (!empty($_POST["nama"]) && !empty($_POST["harga"]) && !empty($_POST["stok"]) && !empty($_POST["jumlah_beli"]) && !empty($_FILES["gambar"]["name"])) {
     // Ambil data dari form
@@ -10,35 +8,51 @@ if ($_POST) {
     $deskripsi = $_POST['deskripsi'];
     $harga = $_POST['harga'];
     $stok = $_POST['stok'];
-    $jumlah_beli = $_POST['jumlah_beli'];
+    $grosir_id = $_POST['jumlah_beli']; // Ini adalah grosir_id
 
-    // Proses upload gambar
+    $grosirMapping = [
+      'aa' => 'GR001', // Satuan menjadi GR001
+      'bb' => 'GR002'  // Pack menjadi GR002
+    ];
+    
+    if (isset($grosirMapping[$grosir_id])) {
+      $grosir_id = $grosirMapping[$grosir_id];
+    }
+
+    $validGrosirIds = ["GR001", "GR002", "GR003", "GR004"];
+    if (!in_array($grosir_id, $validGrosirIds)) {
+      echo "<script>alert('ID Grosir tidak valid. Harap pilih salah satu dari GR001, GR002, GR003, atau GR004.'); window.history.back();</script>";
+      exit;
+    }
+
     $gambar = $_FILES['gambar']['name'];
     $gambar_tmp = $_FILES['gambar']['tmp_name'];
-    $gambar_path = '../Gambar/produk/' . $gambar; // Ganti dengan path direktori upload yang sesuai
+    $gambar_path = '../Gambar/produk/' . $gambar; 
+
+    if (!file_exists('../Gambar/produk/')) {
+      mkdir('../Gambar/produk/', 0777, true);
+    }
 
     if (move_uploaded_file($gambar_tmp, $gambar_path)) {
-      // Query untuk menyimpan data ke database
-      $query = "INSERT INTO barang (nama_barang, deskripsi, harga, grosir_id, gambar, stok) 
-            VALUES ('$nama', '$deskripsi', '$harga', '$jumlah_beli', '$gambar', '$stok')";
+      $checkSeq = "SELECT setval('barang_id_seq', (SELECT COALESCE(MAX(id),0) FROM barang))";
+      pg_query($conn, $checkSeq);
 
-      // Eksekusi query
-      if (pg_query($conn, $query)) {
-        echo "Data produk berhasil disimpan.";
-        header('location: produk.php');
+      $query = "INSERT INTO barang (id, nama_barang, deskripsi, harga, grosir_id, gambar, stok) 
+                VALUES (nextval('barang_id_seq'), $1, $2, $3, $4, $5, $6)";
+
+      if (pg_query_params($conn, $query, [$nama, $deskripsi, $harga, $grosir_id, $gambar, $stok])) {
+        echo "<script>alert('Data produk berhasil disimpan.'); window.location.href='produk.php';</script>";
         exit;
       } else {
-        echo "Terjadi kesalahan dalam menyimpan data produk.";
+        echo "<script>alert('Terjadi kesalahan dalam menyimpan data produk: " . pg_last_error($conn) . "');</script>";
       }
     } else {
-      echo 'Gagal mengunggah gambar.';
+      echo "<script>alert('Gagal mengunggah gambar.');</script>";
     }
   } else {
-    // Field tidak lengkap, tampilkan pesan kesalahan atau tindakan lainnya
-    echo "Silakan isi semua field.";
+    echo "<script>alert('Silakan isi semua field.');</script>";
   }
 }
 
-// Tutup koneksi ke database
 pg_close($conn);
 ?>
