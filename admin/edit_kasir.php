@@ -14,9 +14,9 @@
     $sql = "UPDATE kasir SET nama='$nama', alamat='$alamat', telepon='$telepon' WHERE id ='$id'";
 
         // Eksekusi query
-        if (odbc_exec($conn, $sql)) {
+        if (pg_query($conn, $sql)) {
             echo "Data produk berhasil diperbarui.";
-            header('location: /admin/pengguna.php');
+            header('location: pengguna.php');
         } 
 
 

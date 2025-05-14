@@ -90,10 +90,10 @@
       $jumlah_beli = isset($_POST['jumlah_beli']) ? $_POST['jumlah_beli'] : 'aa'; // Memberikan nilai default 'aa' jika tidak terdefinisi
       // Query untuk mengambil data produk
       $query = "SELECT barang.* FROM barang INNER JOIN grosir ON  barang.grosir_id = grosir.id WHERE grosir_id ='$jumlah_beli'";
-      $result = odbc_exec($conn, $query);
+      $result = pg_query($conn, $query);
 
       // Menampilkan data produk dalam bentuk card
-      while ($row = odbc_fetch_array($result)) {
+      while ($row = pg_fetch_assoc($result)) {
         echo "<div class='col-md-2 mt-3 justify-content-center'>";
         echo "<div class='card'>";
         echo "<img src='/Gambar/produk/" . $row['gambar'] . "' class='card-img-top' alt='Gambar Produk'>";
@@ -125,7 +125,7 @@
                     </div>
                     <div class="modal-body">
                         <!-- Form edit produk -->
-                        <form action="/admin/edit_produk.php?id=<?php echo $row['id']; ?>" method="POST" enctype="multipart/form-data">
+                        <form action="edit_produk.php?id=<?php echo $row['id']; ?>" method="POST" enctype="multipart/form-data">
                             <!-- Input nama -->
                             <div class="mb-3">
                                 <label for="nama" class="form-label">Nama Produk</label>
@@ -179,7 +179,7 @@
   <div class="modal fade" id="tambah_produk" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
       <div class="modal-content">
-        <form method="POST" action="/admin/tambah_produk_aksi.php" enctype="multipart/form-data">
+        <form method="POST" action="tambah_produk_aksi.php" enctype="multipart/form-data">
           <div class="modal-header">
             <h1 class="modal-title fs-5" id="exampleModalLabel">Tambah Produk</h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>

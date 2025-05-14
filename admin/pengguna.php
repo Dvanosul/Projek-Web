@@ -65,10 +65,9 @@
 
           // Mengambil data pengguna dari tabel pengguna
           $query = "SELECT * FROM pelanggan";
-          $result = odbc_exec($conn, $query);
-
+          $result = pg_query($conn, $query);
           // Menampilkan data pengguna dalam tabel
-          while ($row = odbc_fetch_array($result)) {
+          while ($row = pg_fetch_assoc($result)) {
             echo "<tr>";
             echo "<th scope='row'>" . $row['id'] . "</th>";
             echo "<td>" . $row['nama'] . "</td>";
@@ -92,7 +91,7 @@
                     </div>
                     <div class="modal-body">
                         <!-- Form edit produk -->
-                        <form action="/admin/edit_pengguna.php?id=<?php echo $row['id']; ?>" method="POST" enctype="multipart/form-data">
+                        <form action="edit_pengguna.php?id=<?php echo $row['id']; ?>" method="POST" enctype="multipart/form-data">
                             <!-- Input nama -->
                             <div class="mb-3">
                                 <label for="nama" class="form-label">Nama</label>
@@ -130,7 +129,7 @@
       
             <?php
           }
-          odbc_close($conn);
+          pg_close($conn);
           ?>
         </tbody>
       </table>
@@ -154,10 +153,10 @@
 
           // Mengambil data pengguna dari tabel pengguna
           $query = "SELECT * FROM kasir";
-          $result = odbc_exec($conn, $query);
+          $result = pg_query($conn, $query);
 
           // Menampilkan data pengguna dalam tabel
-          while ($row = odbc_fetch_array($result)) {
+          while ($row = pg_fetch_assoc($result)) {
             echo "<tr>";
             echo "<th scope='row'>" . $row['id'] . "</th>";
             echo "<td>" . $row['nama'] . "</td>";
@@ -179,7 +178,7 @@
                     </div>
                     <div class="modal-body">
                         <!-- Form edit produk -->
-                        <form action="/admin/edit_kasir.php?id=<?php echo $row['id']; ?>" method="POST" enctype="multipart/form-data">
+                        <form action="edit_kasir.php?id=<?php echo $row['id']; ?>" method="POST" enctype="multipart/form-data">
                             <!-- Input nama -->
                             <div class="mb-3">
                                 <label for="nama" class="form-label">Nama</label>
@@ -210,7 +209,7 @@
         </div>
             <?php
           }
-          odbc_close($conn);
+          pg_close($conn);
           ?>
         </tbody>
       </table>

@@ -59,9 +59,9 @@
         FROM pesanan
         INNER JOIN pelanggan ON pesanan.pelanggan_id = pelanggan.id
         LEFT JOIN status ON pesanan.status_id = status.id";
-        $result = odbc_exec($conn, $query);
+        $result = pg_query($conn, $query);
 
-        while ($row = odbc_fetch_array($result)) {
+        while ($row = pg_fetch_assoc($result)) {
           echo "<tr>";
           echo "<td>" . $row['id'] . "</td>";
           echo "<td>" . $row['nama_pelanggan'] . "</td>";
@@ -89,11 +89,11 @@
                           FROM pesanan_barang
                           INNER JOIN barang ON pesanan_barang.barang_id = barang.id
                           WHERE pesanan_barang.pesanan_id = " . $row['id'];
-          $resultBarang = odbc_exec($conn, $queryBarang);
+          $resultBarang = pg_query($conn, $queryBarang);
           
           // Menampilkan daftar barang dalam satu sel
           echo "<td>";
-          while ($rowBarang = odbc_fetch_array($resultBarang)) {
+          while ($rowBarang = pg_fetch_assoc($resultBarang)) {
             echo $rowBarang['nama_barang'] . "<br>";
           }
           echo "</td>";

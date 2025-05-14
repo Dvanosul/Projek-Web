@@ -23,9 +23,9 @@ if ($_POST) {
             VALUES ('$nama', '$deskripsi', '$harga', '$jumlah_beli', '$gambar', '$stok')";
 
       // Eksekusi query
-      if (odbc_exec($conn, $query)) {
+      if (pg_query($conn, $query)) {
         echo "Data produk berhasil disimpan.";
-        header('location: /admin/produk.php');
+        header('location: produk.php');
         exit;
       } else {
         echo "Terjadi kesalahan dalam menyimpan data produk.";
@@ -40,5 +40,5 @@ if ($_POST) {
 }
 
 // Tutup koneksi ke database
-odbc_close($conn);
+pg_close($conn);
 ?>

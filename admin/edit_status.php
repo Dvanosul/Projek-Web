@@ -8,13 +8,14 @@ if ($_POST) {
 
   // Memperbarui status pesanan di database
   $query = "UPDATE pesanan SET status_id = $statusId WHERE id = $pesananId";
-  $result = odbc_exec($conn, $query);
+  $result = pg_query($conn, $query);
 
   if ($result) {
     echo "Status pesanan berhasil diperbarui.";
-    header('LOcation:/admin/pesanan2.php');
+    header('LOcation:pesanan2.php');
   } else {
     echo "Gagal memperbarui status pesanan.";
   }
 }
 ?>
+`

@@ -1,20 +1,24 @@
 <?php
-    // koneksi database
-    session_start();
-    include '../koneksi.php';
-    // menangkap data yang di kirim dari form
+// koneksi database
+session_start();
+include '../koneksi.php';
 
-    $nama = $_POST['nama'];
-    $alamat = $_POST['alamat'];
-    $telepon = $_POST['telepon'];
-    $username = $_POST['username'];
-    $password = $_POST['password'];    
-    
+// menangkap data yang dikirim dari form
+$nama = $_POST['nama'];
+$alamat = $_POST['alamat'];
+$telepon = $_POST['telepon'];
+$username = $_POST['username'];
+$password = $_POST['password'];
 
-    $sql = "INSERT INTO kasir (nama, alamat, telepon, username, password) Values 
-    ('$nama','$alamat', '$telepon', '$username', '$password')";
-    $result = odbc_exec($conn, $sql);
+// query insert
+$sql = "INSERT INTO kasir (nama, alamat, telepon, username, password) 
+        VALUES ('$nama', '$alamat', '$telepon', '$username', '$password')";
+$result = pg_query($conn, $sql);
 
-
-    header("location:login_admin.php");
+// cek hasil query
+if ($result) {
+    echo "<script>alert('Data berhasil didaftarkan!'); window.location.href='login_admin.php';</script>";
+} else {
+    echo "<script>alert('Pendaftaran gagal: " . pg_last_error($conn) . "'); window.history.back();</script>";
+}
 ?>
