@@ -22,12 +22,12 @@ if (!isset($_SESSION['transaksi_id'])) {
 
 // Mengambil data barang yang dibeli
 $queryKeranjang = "SELECT b.*, tb.jumlah as jumlah, g.jumlah as per, tb.sub_total, tb.barang_id 
-                   FROM barang b 
-                   INNER JOIN grosir g ON b.grosir_id = g.id 
-                   INNER JOIN transaksi_barang tb ON b.id = tb.barang_id 
-                   INNER JOIN transaksi t ON t.id = tb.transaksi_id 
-                   INNER JOIN pelanggan p ON p.id = t.pelanggan_id 
-                   WHERE t.id = $1";
+                  FROM barang b 
+                  INNER JOIN grosir g ON b.grosir_id = g.id 
+                  INNER JOIN transaksi_barang tb ON b.id = tb.barang_id 
+                  INNER JOIN transaksi t ON t.id = tb.transaksi_id 
+                  INNER JOIN pelanggan p ON p.id = t.pelanggan_id 
+                  WHERE t.id = $1";
 $resultKeranjang = pg_query_params($conn, $queryKeranjang, [$idTransaksi]);
 
 // Menghitung total harga barang
